@@ -1,0 +1,11 @@
+source: http://galaxy.agh.edu.pl/~estrzalk/PI/cw/Maszyna_Turinga.pdf
+available characters for examples: [#, 0, 1]
+Instructions:
+(0,q0,0,q0,l)
+(1,q0,0,q1,l)
+(#,q0,0,q2,l)
+(0,q1,1,q0,l)
+(1,q1,1,q1,l)
+(#,q1,1,q2,l)
+Examples:
+# 1 0 0 1 1 #

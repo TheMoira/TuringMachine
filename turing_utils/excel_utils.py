@@ -59,7 +59,7 @@ def generate_xlsx_file(name, alphabet, number_of_states, empty_mark='#'):
 
     workbook.save(f"{filename}.xlsx")
 
-def generate_instruction_from_xlsx_file(filename):
+def generate_instructions_from_xlsx_file(filename, only_as_tuples = False):
     workbook = load_workbook(filename)
     sheet = workbook.active
     states_row = sheet[table_corner_row]
@@ -77,7 +77,10 @@ def generate_instruction_from_xlsx_file(filename):
             out_state = sheet.cell(value_position_row + 1, state_position_col).value
             step = sheet.cell(value_position_row + 2, state_position_col).value
             instr = (in_val, in_state, out_val, out_state, step)
-            instructions.append(turing.Instruction(instr))
+            if only_as_tuples:
+                instructions.append(instr)
+            else:
+                instructions.append(turing.Instruction(instr))
     return instructions
 
 
@@ -93,7 +96,7 @@ if __name__ == '__main__':
     # generate_xlsx_file(name,alp,nr)
     # generate_xlsx_file(name2,alp2,nr2)
 
-    # instructions = generate_instruction_from_xlsx_file('test2_machine_instructions.xlsx')
+    # instructions = generate_instructions_from_xlsx_file('test2_machine_instructions.xlsx')
     # for instr in instructions:
     #     print(instr)
 

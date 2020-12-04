@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.views.generic import ListView, DetailView
+from .models import TuringMachineDB
 
 # main page
 def index(request):
@@ -12,3 +13,14 @@ def about(request):
 
 def stylesheet(request):
     return render(request, '../static/TuringSimulator/main.css')
+
+
+class MachineListView(ListView):
+    model = TuringMachineDB
+    template_name = 'TuringSimulator/machines.html'
+    context_object_name = 'machines'
+    ordering = ['name']
+
+class MachineDetailView(DetailView):
+    model = TuringMachineDB
+

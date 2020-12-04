@@ -24,16 +24,28 @@
             <div class="inner">
               <h3 class="masthead-brand">Turing Machine</h3>
               <nav class="nav nav-masthead justify-content-center">
-                <a class="nav-link active" href="{% url 'turing_index' %}">Home</a>
-                <a class="nav-link" href="#">Simulator</a>
-                <a class="nav-link" href="#">Login</a>
-                <a class="nav-link" href="#">Register</a>
+                <a class="nav-link active" href="{% url 'turing_index' %}">Home</strong></a>
+                <a class="nav-link" href="{% url 'machines' %}">Choose simulator</a>
+                {% if user.is_authenticated %}
+                  <a class="nav-link" href="#">Create simulator</a>
+                  <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+                {% else %}
+                  <a class="nav-link" href="{% url 'login' %}">Login</a>
+                  <a class="nav-link" href="{% url 'register' %}">Register</a>
+                {% endif %}
                 <a class="nav-link" href="{% url 'turing_about' %}">About</a>
               </nav>
             </div>
           </header>
           <main role="main" class="inner cover">
             <div class="lead">
+                {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
                 {% block content %}
                 {% endblock %}
             </div>

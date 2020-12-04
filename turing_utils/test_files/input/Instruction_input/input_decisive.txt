@@ -1,5 +1,8 @@
 source: http://prac.us.edu.pl/~uboryczk/wdi2/
 changed 1st instruction (to avoid infinite loop)
+# a b b a #
+# b a b c #
+# c c c b a b c c c #
 available characters for examples: [#, a, b, c]
 Instructions:
 (#,q0,#,q8,r)
@@ -34,15 +37,13 @@ Instructions:
 (a,q7,a,q9,r)
 (b,q7,b,q9,r)
 (c,q7,#,q3,l)
-(#,q8,palindrome,q10,r)
-(a,q8,palindrome,q10,r)
-(b,q8,palindrome,q10,r)
-(c,q8,palindrome,q10,r)
-(#,q9,not palindrome,q10,r)
-(a,q9,not palindrome,q10,r)
-(b,q9,not palindrome,q10,r)
-(c,q9,not palindrome,q10,r)
+(#,q8,P,q10,r)
+(a,q8,P,q10,r)
+(b,q8,P,q10,r)
+(c,q8,P,q10,r)
+(#,q9,N,q10,r)
+(a,q9,N,q10,r)
+(b,q9,N,q10,r)
+(c,q9,N,q10,r)
 Examples:
-# a b b a #
 # b a b c #
-# c c c b a b c c c #

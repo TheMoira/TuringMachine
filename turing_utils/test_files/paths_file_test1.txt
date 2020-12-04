@@ -1,0 +1,7 @@
+../test_files/input/excel_inputs/double_content_machine_instructions.xlsx
+../test_files/input/Instruction_input/input3.txt
+../test_files/output/out6.txt
+#abaa#
+n
+1
+../test_files/paths_file_test1.txt

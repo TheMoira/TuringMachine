@@ -1,9 +1,11 @@
-import turing_utils.turing_draft as turing
+import turing_utils.scripts.turing_draft as turing
 from openpyxl import Workbook, styles as ops, load_workbook
+import sys
+
 table_corner_row = 4
 table_corner_column = 1
 
-def generate_xlsx_file(name, alphabet, number_of_states, empty_mark='#'):
+def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark='#'):
     filename = f"{name}_machine_instructions"
 
     if empty_mark not in alphabet:
@@ -57,16 +59,20 @@ def generate_xlsx_file(name, alphabet, number_of_states, empty_mark='#'):
 
     sheet.freeze_panes = f'A{table_corner_row+1}'
 
-    workbook.save(f"{filename}.xlsx")
+    workbook.save(f"{path}{filename}.xlsx")
+    return f"{path}{filename}.xlsx"
 
-def generate_instructions_from_xlsx_file(filename, only_as_tuples = False):
+def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileout = None, examples = None):
     workbook = load_workbook(filename)
     sheet = workbook.active
     states_row = sheet[table_corner_row]
     number_of_states = len(states_row) - 1
     alphabet_len = (sheet.max_row - table_corner_row) // 3
     instructions = []
-
+    original_stdout = sys.stdout
+    if(fileout):
+        sys.stdout = open(fileout, 'w')
+    print('Instructions:')
     for state_number in range(number_of_states):
         state_position_col = state_number + table_corner_column + 1
         for value_number in range(alphabet_len):
@@ -76,11 +82,19 @@ def generate_instructions_from_xlsx_file(filename, only_as_tuples = False):
             out_val = sheet.cell(value_position_row, state_position_col).value
             out_state = sheet.cell(value_position_row + 1, state_position_col).value
             step = sheet.cell(value_position_row + 2, state_position_col).value
-            instr = (in_val, in_state, out_val, out_state, step)
+            instr = f'({in_val},{in_state},{out_val},{out_state},{step})'
             if only_as_tuples:
                 instructions.append(instr)
+                print(instr)
             else:
                 instructions.append(turing.Instruction(instr))
+    if(examples):
+        print('Examples:')
+        for e in examples:
+            for l in e:
+                print(l, end=' ')
+            print()
+    sys.stdout = original_stdout
     return instructions
 
 
@@ -88,15 +102,23 @@ def generate_instructions_from_xlsx_file(filename, only_as_tuples = False):
 if __name__ == '__main__':
     alp = ['#', '0', '1']
     alp2 = ['a', 'b', 'c', 'd']
+    alp3 = ['a', 'b']
+
     name = 'test2'
     name2 = 'test1'
+    name3 = 'double_content'
+    
     nr = 2
     nr2 = 5
+    nr3 = 9
+
+    examples3 = [['#', 'a', 'a', 'b', '#']]
 
     # generate_xlsx_file(name,alp,nr)
     # generate_xlsx_file(name2,alp2,nr2)
+    # generate_xlsx_file(name3,alp3,nr3)
 
-    # instructions = generate_instructions_from_xlsx_file('test2_machine_instructions.xlsx')
+    instructions = generate_instructions_from_xlsx_file(f'{name3}_machine_instructions.xlsx', True, 'test_files/input_2.txt', examples3)
     # for instr in instructions:
     #     print(instr)
 

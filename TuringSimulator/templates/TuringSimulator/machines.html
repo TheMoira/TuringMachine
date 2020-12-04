@@ -1,0 +1,14 @@
+{% extends "TuringSimulator/base.html" %}
+{% block content %}
+    {% for machine in machines %}
+        {% if user.is_authenticated and user == machine.author or machine.author.is_superuser  %}
+            <article class="media content-section">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">{{ machine }}</a>
+                </div>
+              </div>
+            </article>
+        {% endif %}
+    {% endfor %}
+{% endblock content %}

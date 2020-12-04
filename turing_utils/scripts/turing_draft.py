@@ -1,6 +1,9 @@
-import random
+import random, sys
 
 stop = 100
+
+def validate_db_string_to_instr(instr_string):
+    pass
 
 def random_example(alphabet, empty_symbol = '#', max_len = 10, min_len = 1):
     length = random.randint(min_len, max_len)
@@ -39,27 +42,12 @@ class Instruction:
         return 1 if self.instr['step'] == 'r' else -1
 
 
-class TuringMachine:
-    '''
-    start_index - where machine should start in each example, if start_index<0 it will choose place depending on example ength (e.g. last place)
-    starting_state - usually 'q0'
-    instructions - list of instruction tuples (eg. test_files/input.txt)
-    inputs - list of input lists to test machine
-    '''
-    def __init__(self, start_index, starting_state, instructions, inputs):
-        self.instructions = instructions
-        self.inputs = inputs
-        self.start_index = start_index
-        self.starting_state = starting_state
+class InstructionBox:
+    def __init__(self, instructions=None):
+        self.instructions = instructions if instructions else []
 
-    def add_example(self, example):
-        self.inputs += example
-
-    def add_instruction(self, instruction):
-        self.instructions += instruction
-
-    def print(self):
-        pass
+    def add_instruction(self, instr):
+        self.instructions.append(instr)
 
     def find_instruction(self, s_in, q_in):
         instruction = None
@@ -69,18 +57,60 @@ class TuringMachine:
                 break
         return instruction
 
-    def transform_with_instruction(self, count, write_changes):
+    def __str__(self):
+        # for database
+        as_str = [str(d) for d in self.instructions]
+        return '|'.join(as_str)
+
+    def from_db_str(self, instr_string):
+        instr_dicts = instr_string.split('|')
+        for instr in instr_dicts:
+            dct = eval(instr)
+            keys = tuple(dct)
+            temp = tuple([dct[key] for key in keys])
+            self.instructions.append(Instruction(temp))
+
+
+class TuringMachine:
+    '''
+    start_index - where machine should start in each example, if start_index<0 it will choose place depending on example ength (e.g. last place)
+    starting_state - usually 'q0'
+    instructions - list of instruction tuples (eg. test_files/input.txt)
+    inputs - list of input lists to test machine
+    '''
+    def __init__(self, start_index, starting_state, instructions, inputs):
+        if not isinstance(instructions, InstructionBox):
+            self.instructions = InstructionBox(instructions)
+        else:
+            self.instructions = instructions
+        self.inputs = inputs
+        self.start_index = start_index
+        self.starting_state = starting_state
+
+    def add_example(self, example):
+        self.inputs += example
+
+    def print(self):
+        pass
+
+    def find_instruction(self, s_in, q_in):
+        return self.instructions.find_instruction(s_in, q_in)
+
+    def transform_with_instructions(self, count, write_changes):
         ended = False
         example = self.inputs[count]
+        print(f'E:{example}')
         index = self.start_index if self.start_index >=0 else len(example) + self.start_index
         current_q = self.starting_state
         current_value = None
         check = 0
+        indexes_of_where_the_arrow_is = []
         while not ended and check < stop:
             check += 1
             # assuring the infinity of the tape
-            if index == -1:
+            if index <= -1:
                 example.insert(0, '#')
+                index += 1
             elif index == len(example):
                 example.append('#')
             # finding right instruction for the current state and value in example
@@ -94,29 +124,35 @@ class TuringMachine:
                 # change the value of currently examined element
                 current_value = example[index] = current_instruction.value()
                 # let the tape know where to go, depending on step value (L/R)
+                indexes_of_where_the_arrow_is.append(index)
                 index += current_instruction.step()
                 if write_changes:
                     print(example)
+        print(f"# {indexes_of_where_the_arrow_is}")
         return current_value
 
 
-    def start_machine(self, is_decisive = False, write_changes = True):
-        # needed in transform_with_instruction function, which example is examined currently
+    def start_machine(self, is_decisive = False, write_changes = True, outfile = None):
+        # needed in transform_with_instructions function, which example is examined currently
         count = 0
         # go through all examples
         for example in self.inputs:
-            print(f"\nExample {count + 1}:")
-            print(example)
-            last_value = self.transform_with_instruction(count, write_changes)
-            if is_decisive:
-                print(f"Outcome: {last_value}")
+            if outfile:
+                sys.stdout = open(outfile, 'w')
+            # print(f"\nExample {count + 1}:")
+            # print(example)
+            last_value = self.transform_with_instructions(count, write_changes)
+            # if is_decisive:
+            #     print(f"Outcome: {last_value}")
             count += 1
 
 ################################
 
 
-def line_to_tuple_or_list(s, clear = False, to_list = False):
-    t = s[1:-2] if not clear else s[:-1]
+def line_to_tuple_or_list(string, clear = False, to_list = False):
+    if string[-1] == '\n':
+        string = string[:-1]
+    t = string[1:-1] if not clear else string
     splitter = ',' if not clear else ' '
     data = []
     # for x in t.split(splitter):
@@ -126,6 +162,8 @@ def line_to_tuple_or_list(s, clear = False, to_list = False):
     #         data.append(x)
     for x in t.split(splitter):
         data.append(x)
+    if data[-1] == '':
+        data = data[:-1]
     return tuple(data) if not to_list else data
 
 
@@ -147,6 +185,7 @@ def read_instructions_from_file(filename):
             #     instr = False
             elif is_instruction:
                 instructions.append(Instruction(line_to_tuple_or_list(line)))
+                # print(Instruction(line_to_tuple_or_list(line)))
             elif is_example:
                 example_inputs.append(line_to_tuple_or_list(line, True, True))
     if not file_opened:

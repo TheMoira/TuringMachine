@@ -1,0 +1,7 @@
+../test_files/input/excel_inputs/decimal_incrementation_machine_instructions.xlsx
+../test_files/input/Instruction_input/input5.txt
+../test_files/output/out_decimal.txt
+#199999#
+n
+-1
+../test_files/paths_file_test2.txt

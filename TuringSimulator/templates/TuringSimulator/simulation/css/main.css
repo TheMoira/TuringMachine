@@ -1,0 +1,115 @@
+body{
+    margin: 0;
+    height: 100vh;
+    background-color: black;
+}
+
+canvas{
+    display: block;
+}
+
+input{
+    position: absolute;
+    border: 2px solid rgb(122, 0, 112);
+    font-family: 'Montserrat';
+    z-index: 4;
+    color: aliceblue;
+}
+
+button{
+    position: absolute;
+    left: 20em;
+    border: 2px solid rgb(122, 0, 112);
+    font-family: 'Montserrat';
+    z-index: 4;
+    color: rgb(216, 78, 181);
+}
+
+h4 {
+    position: absolute;
+    top: 0.2em;
+    left: 7.2em;
+    z-index: 4;
+    font-family: 'Montserrat';
+    font-size: 4em;
+    color: aliceblue;
+    text-transform: uppercase;
+    width: auto;
+    line-height: .8em;
+    border: 5px solid rgb(255, 255, 255);
+    padding: .2em;
+  }
+
+h1 {
+    position: absolute;
+    top: 4em;
+    left: 4.3em;
+    font-family: 'Montserrat';
+    font-size: 7em;
+    color: aliceblue;
+    text-transform: uppercase;
+    width: auto;
+    line-height: .8em;
+    border: 5px solid rgb(255, 255, 255);
+    padding: .2em;
+    z-index: 5;
+  }
+  h2 {
+    position: absolute;
+    top: 4em;
+    left: 4em;
+    font-family: 'Montserrat';
+    font-size: 1.5em;
+    color: rgb(242, 206, 253);
+    width: auto;
+    line-height: .4em;
+    border: 2px solid rgb(242, 206, 253);
+    padding: .4em;
+    z-index: 5;
+  }
+  h3 {
+    position: absolute;
+    top: 7em;
+    left: 4em;
+    font-family: 'Montserrat';
+    font-size: 1.5em;
+    color: rgb(255, 145, 227);
+    text-transform: uppercase;
+    width: auto;
+    line-height: .4em;
+    border: 2px solid rgb(255, 145, 227);
+    padding: .4em;
+    z-index: 5;
+  }
+
+#animation{
+    width: auto;
+    height: 720px;
+    top: 30px;
+
+}
+
+.element {
+    /* position: absolute; */
+    /* width: 30px;
+    height: 30px; */
+    box-shadow: 0px 0px 12px rgba(255, 0, 234, 0.5);
+    border: 1px solid rgba(255, 127, 244, 0.25);
+    font-family: 'Montserrat';
+    text-transform: uppercase;
+    text-align: center;
+    padding: .1em;
+    line-height: normal;
+    cursor: default;
+}
+
+.element .letter {
+    position: absolute;
+    text-align: center;
+    left: 0px;
+    right: 0px;
+    /* font-size: 20px; */
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 0 10px rgba(255, 0, 212, 0.95);
+}

@@ -1,19 +1,13 @@
 from django.db import models
+import os
 from django.utils import timezone
 from django.contrib.auth.models import User
 from turing_utils.scripts.turing_draft import InstructionBox, Instruction
-
-#
-# class Post(models.Model):
-#     title = models.CharField(max_length=100)
-#     content = models.TextField()
-#     # also can use instead of default auto_now=True or auto_now_add=True,
-#     # meaning it will change on every post update/only when its created
-#     date_posted = models.DateTimeField(default=timezone.now())
-#     # relation one:many - on_delete specifies what to do if user is deleted,
-#     # (cascade means delete whole post), but doesnt work
-#     # both ways - if post is deleted, it wont delete user
-#     author = models.ForeignKey(User, on_delete=models.CASCADE)
+from .validators import validate_file_extension
+from django.urls import reverse
+from turing_utils.scripts.excel_utils import generate_xlsx_file, generate_instructions_from_xlsx_file
+from Django_project.settings import MEDIA_ROOT
+from openpyxl import Workbook
 
 
 def parse_to_InstructionBox(value):
@@ -32,54 +26,43 @@ def parse_to_query(obj):
     return str(obj)
 
 
-# class InstructionBoxField(models.Field):
-#     description = "Class for holding instructions for a specific machine"
-#     # potrzebne, zeby przetlumaczyl w metodzie to_python() obiekt nasz customowy
-#     __metaclass__ = models.SubfieldBase
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#
-#     def deconstruct(self):
-#         name, path, args, kwargs = super().deconstruct()
-#         return name, path, args, kwargs
-#
-#     def db_type(self, connection):
-#         return 'InstructionBox'
-#
-#     def to_python(self, value):
-#         if isinstance(value, InstructionBox):
-#             return value
-#         if value is None:
-#             return value
-#         return parse_to_InstructionBox(value)
-#
-#     def from_db_value(self, value, expression, connection):
-#         if value is None:
-#             return value
-#         return parse_to_InstructionBox(value)
-#
-#     def get_prep_value(self, value):
-#         return parse_to_query(value)
-#
-#     def value_to_string(self, obj):
-#         return parse_to_query(obj)
 
-
+# TODO: dodac w initach wywolanie funkcji do zrobienia co trzeba (kroki instrukcji itd)
 class TuringMachineDB(models.Model):
     title = models.CharField(max_length=100)
     is_decisive = models.BooleanField(default=False)
     # instructions = InstructionBoxField()
     # has to be specific string
-    instructions = models.FileField(upload_to='excel_files', default='excel_files/default_excel.xlsx')
+    instructions = models.FileField(upload_to='excel_files', default='excel_files/default_excel.xlsx', validators=[validate_file_extension])
     number_of_states = models.IntegerField()
     alphabet = models.CharField(max_length=100)
     starting_index = models.IntegerField(default=1)
     empty_sign = models.CharField(max_length=1, default='#')
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    needed_empty_excel = True
+    excel_filled = False
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('machine-detail', kwargs={'pk': self.pk})
+
+    def prepare_excel(self):
+        if self.needed_empty_excel:
+            name = str(self.title)
+            alphabet = str(self.alphabet).split(',')
+            number_of_states = int(self.number_of_states)
+            empty_mark = str(self.empty_sign)
+            path = self.instructions.path
+            workbook = generate_xlsx_file(name, alphabet, number_of_states, path, empty_mark, return_only_name=True)
+            filepath = MEDIA_ROOT + f"/excel_files/{name}_{self.author}.xlsx"
+            workbook.save(filepath)
+            self.instructions = filepath
+            self.needed_empty_excel = False
+        # elif self.excel_filled:
+        #     outputpath = MEDIA_ROOT + f"/excel_files/{name}_{self.author}.xlsx"
+        #     generate_instructions_from_xlsx_file(self.instructions.path, True, files[1], examples)
 
 
 class ExampleDB(models.Model):
@@ -90,3 +73,6 @@ class ExampleDB(models.Model):
 
     def __str__(self):
         return self.content
+
+    def get_absolute_url(self):
+        return reverse('machine-detail', kwargs={'pk': self.machine_id})

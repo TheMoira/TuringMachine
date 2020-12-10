@@ -5,7 +5,8 @@ import sys
 table_corner_row = 4
 table_corner_column = 1
 
-def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark='#'):
+
+def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark='#', return_only_name = False):
     filename = f"{name}_machine_instructions"
 
     if empty_mark not in alphabet:
@@ -59,8 +60,10 @@ def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark
 
     sheet.freeze_panes = f'A{table_corner_row+1}'
 
-    workbook.save(f"{path}{filename}.xlsx")
-    return f"{path}{filename}.xlsx"
+    # workbook.save(f"{path}{filename}.xlsx")
+    # return f"{path}{filename}.xlsx" if not return_only_name else f'{filename}.xlsx'
+    return workbook
+
 
 def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileout = None, examples = None):
     workbook = load_workbook(filename)

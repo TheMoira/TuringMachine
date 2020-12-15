@@ -1,4 +1,5 @@
 import random, sys
+from io import StringIO
 
 stop = 100
 
@@ -88,7 +89,7 @@ class TuringMachine:
         self.starting_state = starting_state
 
     def add_example(self, example):
-        self.inputs += example
+        self.inputs.append(example)
 
     def print(self):
         pass
@@ -135,16 +136,22 @@ class TuringMachine:
     def start_machine(self, is_decisive = False, write_changes = True, outfile = None):
         # needed in transform_with_instructions function, which example is examined currently
         count = 0
+        original_stdout = sys.stdout
+        string_out = StringIO()
         # go through all examples
         for example in self.inputs:
             if outfile:
                 sys.stdout = open(outfile, 'w')
+            else:
+                sys.stdout = string_out
             # print(f"\nExample {count + 1}:")
             # print(example)
             last_value = self.transform_with_instructions(count, write_changes)
             # if is_decisive:
             #     print(f"Outcome: {last_value}")
             count += 1
+        sys.stdout = original_stdout
+        return string_out
 
 ################################
 

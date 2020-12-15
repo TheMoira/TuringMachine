@@ -22,4 +22,4 @@ Instructions:
 (8,q1,9,q2,l)
 (9,q1,0,q1,l)
 Examples:
-# 1 9 9 9 9 9 # 
+# 2 3 4 5 # 

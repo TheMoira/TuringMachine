@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TuringMachineDB, ExampleDB
-from django.http import HttpResponse
-
+from django.http import HttpResponse, HttpResponseRedirect
+from .forms import UploadFileForm
+from django.templatetags.static import static
 
 # main page
 def index(request):
@@ -20,18 +21,29 @@ def stylesheet(request):
     return render(request, '../static/TuringSimulator/main.css')
 
 
-def simulation(request):
-    if request.user.is_authenticated:
-        user = request.user
-    else:
-        user = 'public'
-    # TODO: zrobic tu transformacje z turing_utils zeby szlo do symulacji
-    queryset = ''
+def stylesheet_sim(request):
+    return render(request, '../static/TuringSimulator/main2.css')
+
+
+def simulation(request, pk):
+    example = get_object_or_404(ExampleDB, pk=pk)
+    machine_id = example.machine_id
+    # f = example.example_steps_file
+    # f.open(mode='r')
+    # lines = f.read()
+    # print(lines)
+    # f.close()
+    # path = example.example_steps_file.path
+    lines = example.example_steps
+    scratched = static('TuringSimulator/resources/Scratched.png')
+    metal = static('TuringSimulator/resources/metal_texture.jpg')
     context = {
-        'data': queryset,
-        'user': user,
+        'lines': lines,
+        'scratched': scratched,
+        'metal':metal,
+        'machine_id':machine_id,
     }
-    return render(request, 'TuringSimulator/simulation/simulation.html', context)
+    return render(request, 'TuringSimulator/simulation.html', context)
     # return render(request, 'TuringSimulator/simulation/simulation.html')
 
 
@@ -42,6 +54,26 @@ def download_instruction(request, object_id):
     response = HttpResponse(file.read(), content_type="application/vnd.ms-excel")
     response['Content-Disposition'] = 'attachment; filename=' + path
     return response
+
+
+def upload_instruction(request, object_id):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES['file']
+            machine = get_object_or_404(TuringMachineDB, pk=object_id)
+            print(machine.instructions.name)
+            machine.instructions = file
+            print('2 ' + machine.instructions.name)
+            machine.excel_empty = False
+            machine.save()
+            # return HttpResponseRedirect('TuringSimulator/machine/' + str(object_id))
+            next = request.POST.get('next', '/')
+            return HttpResponseRedirect(next)
+    else:
+        form = UploadFileForm()
+    return render(request, 'TuringSimulator/UploadInstr.html', {'form': form})
+
 
 
 class MachineListView(ListView):
@@ -63,6 +95,9 @@ class ExampleCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.machine = self.t_machine
+        # form.instance.prepare_instruction_steps_file()
+        form.instance.prepare_steps_text()
+        form.save()
         return super().form_valid(form)
 
     def dispatch(self, request, *args, **kwargs):
@@ -78,6 +113,8 @@ class MachineCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.save()
         form.instance.prepare_excel()
+        form.instance.initial_alphabet = form.instance.alphabet
+        form.instance.initial_number_of_states = form.instance.number_of_states
         return super().form_valid(form)
 
 
@@ -88,6 +125,12 @@ class MachineUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        form.save()
+        if form.instance.initial_alphabet != form.instance.alphabet \
+                or form.instance.initial_number_of_states != form.instance.number_of_states:
+            form.instance.prepare_excel()
+            form.instance.initial_number_of_states = form.instance.number_of_states
+            form.instance.initial_alphabet = form.instance.alphabet
         return super().form_valid(form)
 
     def test_func(self):
@@ -102,7 +145,7 @@ class MachineUpdateViewFile(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.excel_filled = True
+        form.save()
         return super().form_valid(form)
 
     def test_func(self):
@@ -110,7 +153,6 @@ class MachineUpdateViewFile(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return self.request.user == machine.author
 
 
-# TODO: clean file django_cleanup not working
 class MachineDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = TuringMachineDB
     success_url = '/TuringSimulator/'
@@ -130,3 +172,4 @@ class ExampleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self, **kwargs):
         return '/TuringSimulator/machine/' + str(self.object.machine_id)
+

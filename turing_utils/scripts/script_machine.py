@@ -39,6 +39,7 @@ if __name__ == '__main__':
         starting_index = int(input("Insert index of where machine should start (-1 if on last element): "))
         is_dec = True if is_dec == 'y' else False
         examples = [example.split()]
+        print(examples)
         exl.generate_instructions_from_xlsx_file(file_path, True, out_file_path, examples)
         time.sleep(3)
         use_test.machine_use_testing(out_file_path, starting_index, 'q0', is_dec, True, final_file)

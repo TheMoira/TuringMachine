@@ -24,7 +24,7 @@
         {% for example in object.exampledb_set.all %}
             {% if example.author == user or example.author.is_superuser %}
             <li>
-                <a href="#">{{example}}</a>
+                <a href="{% url 'simulation-view' example.id %}">{{example}}</a>
                 {% if example.author == user %}
                     <a href="{% url 'example-delete' example.id %}">Delete</a>
                 {% endif %}
@@ -37,7 +37,7 @@
             <a href="{% url 'download-instr' object.id %}" class="btn btn-lg btn-secondary">Download current instruction file</a></br>
             {% if user == object.author %}
             <a href="{% url 'machine-update' object.id %}" class="btn btn-lg btn-secondary">Modify machine</a></br>
-                <a href="{% url 'machine_instr-update' object.id %}" class="btn btn-lg btn-secondary">Upload instruction file</a></br>
+                <a href="{% url 'upload-instr' object.id %}" class="btn btn-lg btn-secondary">Upload instruction file</a></br>
                 <a href="{% url 'machine-delete' object.id %}" class="btn btn-lg btn-secondary">Delete machine</a></br>
             {% endif %}
         </p>

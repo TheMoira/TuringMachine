@@ -6,7 +6,7 @@ table_corner_row = 4
 table_corner_column = 1
 
 
-def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark='#', return_only_name = False):
+def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark='#', return_only_workbook = False):
     filename = f"{name}_machine_instructions"
 
     if empty_mark not in alphabet:
@@ -60,9 +60,11 @@ def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark
 
     sheet.freeze_panes = f'A{table_corner_row+1}'
 
-    # workbook.save(f"{path}{filename}.xlsx")
-    # return f"{path}{filename}.xlsx" if not return_only_name else f'{filename}.xlsx'
-    return workbook
+    if return_only_workbook:
+        return workbook
+
+    workbook.save(f"{path}{filename}.xlsx")
+    return f"{path}{filename}.xlsx"
 
 
 def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileout = None, examples = None):
@@ -85,11 +87,12 @@ def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileo
             out_val = sheet.cell(value_position_row, state_position_col).value
             out_state = sheet.cell(value_position_row + 1, state_position_col).value
             step = sheet.cell(value_position_row + 2, state_position_col).value
-            instr = f'({in_val},{in_state},{out_val},{out_state},{step})'
             if only_as_tuples:
+                instr = f'({in_val},{in_state},{out_val},{out_state},{step})'
                 instructions.append(instr)
                 print(instr)
             else:
+                instr = (in_val, in_state, out_val, out_state, step)
                 instructions.append(turing.Instruction(instr))
     if(examples):
         print('Examples:')

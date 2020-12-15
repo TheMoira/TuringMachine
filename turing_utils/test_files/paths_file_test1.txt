@@ -1,7 +1,7 @@
-../test_files/input/excel_inputs/double_content_machine_instructions.xlsx
-../test_files/input/Instruction_input/input3.txt
+../test_files/input/excel_inputs/decimal_incrementation_machine_instructions.xlsx
+../test_files/input/Instruction_input/decimal_incr_input.txt
 ../test_files/output/out6.txt
-#abaa#
+#2345#
 n
 1
 ../test_files/paths_file_test1.txt

@@ -70,7 +70,6 @@ class ExampleDB(models.Model):
     machine = models.ForeignKey(TuringMachineDB, on_delete=models.DO_NOTHING)
     content = models.CharField(max_length=50, unique=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    example_steps_file = models.FileField(upload_to='text_files', default='text_files/default.txt')
     example_steps = models.TextField(default='')
 
     def __str__(self):
@@ -94,23 +93,6 @@ class ExampleDB(models.Model):
         if list_content[-1] != empty_sign:
             list_content.append('#')
         return list_content
-
-    # def prepare_instruction_steps_file(self):
-    #     # if not self.machine.excel_empty:
-    #     # list of Instruction objects from excel file of machine
-    #     instructions = generate_instructions_from_xlsx_file(filename=str(self.machine.instructions.path))
-    #     print(str(self.machine.instructions.path))
-    #     for i in instructions:
-    #         print(str(i))
-    #     examples = []
-    #     examples.append(self.format_content())
-    #     # print(examples)
-    #     # print(type(examples[0]))
-    #     # print(type(examples[0][0]))
-    #     machine_obj = TuringMachine(int(self.machine.starting_index), 'q0', instructions, examples)
-    #     filepath = MEDIA_ROOT + f"/text_files/{self.machine.title}_ex_{self.content}_{self.author}.txt"
-    #     machine_obj.start_machine(self.machine.is_decisive, outfile=filepath)
-    #     self.example_steps_file = filepath
 
     def prepare_steps_text(self):
         instructions = generate_instructions_from_xlsx_file(filename=str(self.machine.instructions.path))

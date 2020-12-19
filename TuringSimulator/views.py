@@ -28,12 +28,6 @@ def stylesheet_sim(request):
 def simulation(request, pk):
     example = get_object_or_404(ExampleDB, pk=pk)
     machine_id = example.machine_id
-    # f = example.example_steps_file
-    # f.open(mode='r')
-    # lines = f.read()
-    # print(lines)
-    # f.close()
-    # path = example.example_steps_file.path
     lines = example.example_steps
     scratched = static('TuringSimulator/resources/Scratched.png')
     metal = static('TuringSimulator/resources/metal_texture.jpg')
@@ -44,7 +38,6 @@ def simulation(request, pk):
         'machine_id':machine_id,
     }
     return render(request, 'TuringSimulator/simulation.html', context)
-    # return render(request, 'TuringSimulator/simulation/simulation.html')
 
 
 def download_instruction(request, object_id):
@@ -95,7 +88,6 @@ class ExampleCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.machine = self.t_machine
-        # form.instance.prepare_instruction_steps_file()
         form.instance.prepare_steps_text()
         form.save()
         return super().form_valid(form)

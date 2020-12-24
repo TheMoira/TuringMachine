@@ -1,7 +1,9 @@
 {% extends "TuringSimulator/base.html" %}
 {% block content %}
+<!--    {% load static %}-->
+<!--    <script src="{% static 'TuringSimulator/dropdown.js' %}" type="text/javascript"></script>-->
     {% if user.is_authenticated and user == object.author or object.author.is_superuser  %}
-<div class="media-body" xmlns="http://www.w3.org/1999/html">
+    <div class="media-body" xmlns="http://www.w3.org/1999/html">
         <div class="article-metadata">
           <h2 class="mr-2">{{ object }}</h2>
         {% if object.author.is_superuser %}
@@ -9,6 +11,8 @@
         {% else %}
             <p>Author: {{object.author}}</p>
         {% endif %}
+            <p>File: {{object.instructions}}</p>
+            <p><a href="{{ object.instructions.url }}" target="_blank">{{ object.instructions.url }}</a></p>
             <p>Alphabet: {{object.alphabet}}</p>
             <p>{{object.number_of_states}} states</p>
         {% if object.is_decisive %}
@@ -19,7 +23,11 @@
             {% if not object.author.is_superuser %}
                 <p>Author: {{object.author}}</p>
             {% endif %}
-        <p>See simulation for example:</p>
+        {% if object.exampledb_set.all.exists %}
+            <p>See simulation for example:</p>
+        {% else %}
+            <p>No examples for this machine</p>
+        {% endif %}
         <ul>
         {% for example in object.exampledb_set.all %}
             {% if example.author == user or example.author.is_superuser %}
@@ -33,12 +41,12 @@
         {% endfor %}
         </ul>
         <br class="lead p-5">
-            <a href="{% url 'example-create' object.id %}" class="btn btn-lg btn-secondary">Create new example</a></br>
-            <a href="{% url 'download-instr' object.id %}" class="btn btn-lg btn-secondary">Download current instruction file</a></br>
+            <a href="{% url 'example-create' object.id %}" class="btn btn-lg btn-secondary">Create new example</a>
+            <a href="{% url 'download-instr' object.id %}" class="btn btn-lg btn-secondary">Download current instruction file</a>
             {% if user == object.author %}
-            <a href="{% url 'machine-update' object.id %}" class="btn btn-lg btn-secondary">Modify machine</a></br>
-                <a href="{% url 'upload-instr' object.id %}" class="btn btn-lg btn-secondary">Upload instruction file</a></br>
-                <a href="{% url 'machine-delete' object.id %}" class="btn btn-lg btn-secondary">Delete machine</a></br>
+            <a href="{% url 'machine-update' object.id %}" class="btn btn-lg btn-secondary">Modify machine</a>
+                <a href="{% url 'upload-instr' object.id %}" class="btn btn-lg btn-secondary">Upload instruction file</a>
+                <a href="{% url 'machine-delete' object.id %}" class="btn btn-lg btn-secondary">Delete machine</a></br></br>
             {% endif %}
         </p>
         </div>

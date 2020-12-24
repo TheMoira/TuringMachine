@@ -67,8 +67,11 @@ def generate_xlsx_file(name, alphabet, number_of_states, path = './', empty_mark
     return f"{path}{filename}.xlsx"
 
 
-def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileout = None, examples = None):
-    workbook = load_workbook(filename)
+def generate_instructions_from_xlsx_file(filename, only_as_tuples = False, fileout = None, examples = None, ready_workbook = None):
+    if not ready_workbook:
+        workbook = load_workbook(filename)
+    else:
+        workbook = ready_workbook
     sheet = workbook.active
     states_row = sheet[table_corner_row]
     number_of_states = len(states_row) - 1

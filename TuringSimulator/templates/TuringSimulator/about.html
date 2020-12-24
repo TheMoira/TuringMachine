@@ -1,4 +1,34 @@
 {% extends "TuringSimulator/base.html" %}
 {% block content %}
     <h1>About Turing Simulator</h1>
+<br class="lead">
+    Welcome to Turing Machine Simulator.</br>
+    Upon registering you will be able to create your own machine.
+    Without logging in, you can see simulations for prepared public machines and examples of usage in the <i>Choose simulator</i> tab.</br>
+    <b>How to create custom machine?</b></br>
+    After logging in, you will be able to access <i>Create machine</i> tab.
+    There, you will have to provide some data:</br>
+    <ul>
+        <li>Title of the machine</li>
+        <li>Whether or not it's a decisive machine</li>
+        <li>Number of states (without ending state)</li>
+        <li>Alphabet of the machine in format: e.g. <i>a,b,c,d</i> (commas cannot be a part of alphabet)</li>
+        <li>Starting index - where machine should start (insert <i>-1</i> if it should start from the end</li>
+        <li>Empty sign (default is #)</li>
+    </ul></br>
+    After creating machine you will be able to download prepared instruction file. You should fill it with instructions.
+    Then upload filled file for your machine. Your machine is now ready to go.</br>
+
+    <b>How to create custom example for any machine?</b></br>
+    After logging in you will be able to create examples to see simulation for your custom machines and public machines as well.
+    To create example choose available machine from <i>Choose machine</i> tab and click <i>Create example</i>.</br>
+    Format example: for alphabet [a,b,c,d] insert any combination of available characters, e.g. <b>abbacd</b></br>
+
+    <b>How to see simulation?</b></br>
+    To see simulation for a particular example, simply click on the example in the machine in the <i>Choose machine</i> tab.
+    Then press <b>Enter</b> to start machine and <b>Spacebar</b> to move the tape.
+    </br>
+
+</p>
+
 {% endblock content %}

@@ -7,6 +7,7 @@
     <div id="scratched" class="invis">{{scratched}}</div>
     <div id="metal" class="invis">{{metal}}</div>
     <div id="lines" class="invis">{{lines}}</div>
+    <div id="last_value" class="invis">{{last_value}}</div>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'TuringSimulator/main2.css' %}">
 <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
@@ -14,23 +15,11 @@
 </head>
 <body>
     <br>
-    <p id="enter-info">Press enter to start machine</p></br>
+    <h4 id="enter-info" class="enter-info">Press enter to start machine</h4></br>
     <div id="animation">
         <canvas id="animationCanvas">
         </canvas>
     </div>
-    <nav class="nav nav-masthead justify-content-center">
-                <a class="nav-link active" href="{% url 'turing_index' %}">Home</strong></a>
-                <a class="nav-link" href="{% url 'machines' %}">Choose simulator</a>
-                {% if user.is_authenticated %}
-                  <a class="nav-link" href="{% url 'machine-create' %}">Create simulator</a>
-                  <a class="nav-link" href="{% url 'logout' %}">Log out</a>
-                {% else %}
-                  <a class="nav-link" href="{% url 'login' %}">Login</a>
-                  <a class="nav-link" href="{% url 'register' %}">Register</a>
-                {% endif %}
-                <a class="nav-link" href="{% url 'turing_about' %}">About</a>
-    </nav>
 
     {% load static %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
@@ -40,7 +29,10 @@
     <script src="{% static 'TuringSimulator/simulator.js' %}" type="text/javascript"></script>
 <!--    <h4>Turing Machine</h4>-->
     <p class="lead p-5">
-          <a href="{% url 'machine-detail' machine_id %}" class="btn btn-lg btn-secondary">Back to machine</a>
+<!--          <a href="{% url 'machine-detail' machine_id %}" class="btn btn-lg btn-secondary">Back to machine</a>-->
+        <a href="{% url 'machine-detail' machine_id %}" class="btn from-center">
+            Back to machine
+        </a>
     </p>
 </body>
 </html>

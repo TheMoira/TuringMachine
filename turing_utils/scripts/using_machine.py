@@ -5,8 +5,8 @@ def machine_use_testing(filename, start_index, starting_state, is_decisive = Fal
     instructions, ex = td.read_instructions_from_file(filename)
     print(instructions[0])
     print(ex)
-    turing = td.TuringMachine(start_index, starting_state, instructions, ex)
-    turing.start_machine(is_decisive, write_changes, outfile)
+    turing = td.TuringMachine(start_index, starting_state, instructions, ex, is_decisive=is_decisive)
+    turing.start_machine(write_changes, outfile)
 
 
 # if __name__ == '__main__':

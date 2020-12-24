@@ -79,7 +79,7 @@ class TuringMachine:
     instructions - list of instruction tuples (eg. test_files/input.txt)
     inputs - list of input lists to test machine
     '''
-    def __init__(self, start_index, starting_state, instructions, inputs):
+    def __init__(self, start_index, starting_state, instructions, inputs, is_decisive = False):
         if not isinstance(instructions, InstructionBox):
             self.instructions = InstructionBox(instructions)
         else:
@@ -87,6 +87,7 @@ class TuringMachine:
         self.inputs = inputs
         self.start_index = start_index
         self.starting_state = starting_state
+        self.is_decisive = is_decisive
 
     def add_example(self, example):
         self.inputs.append(example)
@@ -133,7 +134,7 @@ class TuringMachine:
         return current_value
 
 
-    def start_machine(self, is_decisive = False, write_changes = True, outfile = None):
+    def start_machine(self, write_changes = True, outfile = None):
         # needed in transform_with_instructions function, which example is examined currently
         count = 0
         original_stdout = sys.stdout
@@ -151,7 +152,7 @@ class TuringMachine:
             #     print(f"Outcome: {last_value}")
             count += 1
         sys.stdout = original_stdout
-        return string_out
+        return string_out, last_value
 
 ################################
 

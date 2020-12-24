@@ -17,8 +17,8 @@ var init_lookAt_pos;
 const colors = [0xE199FF, 0xFFFFFF, 0x49F8FF, 0xFFBD00, 0x6AFE8B, 0xFF31A7, 0x54FFFB];
 var crystals = [];
 var start_moving = false;
-var interval = 100;
-
+var interval = 2000;
+var lastTime = 0;
 
 function init()
 {
@@ -143,10 +143,19 @@ function eventListeners()
         switch(event.code)
         {
             case "Space":
+                prepare_arrow();
+                next_machine_state();
+                update_letter();
                 break;
             case "Enter":
-                init_letters();
-                start_moving = true;
+                if(not_initiated)
+                {
+                    init_letters();
+                    start_moving = true;
+                }
+                prepare_arrow();
+                next_machine_state();
+                update_letter();
                 break;
             default:
                 break;
@@ -169,7 +178,7 @@ function is_numeric_char(c) { return /\d/.test(c); }
 
 function init_letters()
 {
-    var additional_empty_signs = (number_of_letters_to_display - 1)/2 + 10;
+    var additional_empty_signs = (number_of_letters_to_display - 1)/2 + 15;
     var empty_signs = []
     for(var i=0; i<additional_empty_signs; i++)
     {
@@ -177,7 +186,7 @@ function init_letters()
     }
 
     var result = document.getElementById("lines").textContent;
-//    alert(result);
+
     var lines = result.split('\n');
     for(var i = 0; i < lines.length; i++)
     {
@@ -229,6 +238,7 @@ function init_letters()
 
 function prepare_arrow()
 {
+    if(not_initiated) return;
     const metal_map = textureLoader.load( document.getElementById('metal').textContent );
     const clearcoatNormaMap = textureLoader.load( document.getElementById('scratched').textContent );
     material = new THREE.MeshPhysicalMaterial( {
@@ -326,13 +336,13 @@ function move_tape(to_right)
         for(var i = letters.length - 1; i >= 1; i--)
         {
             new TWEEN.Tween( letters[i].position )
-                    .to( { x: letters[i-1].position.x, y: letters[i-1].y, z: letters[i-1].z}, 3000 )
+                    .to( { x: letters[i-1].position.x, y: letters[i-1].y, z: letters[i-1].z}, 2000 )
                     .easing( TWEEN.Easing.Exponential.InOut )
                     .start();
         }
 
         new TWEEN.Tween( letters[0].position )
-                    .to( { x: letters[0].position.x - letter_box_side_length - 10, y: letters[0].y, z: letters[0].z}, 3000 )
+                    .to( { x: letters[0].position.x - letter_box_side_length - 10, y: letters[0].y, z: letters[0].z}, 2000 )
                     .easing( TWEEN.Easing.Exponential.InOut )
                     .start();
 
@@ -342,13 +352,13 @@ function move_tape(to_right)
         for(var i = 0; i < letters.length-1; i++)
         {
             new TWEEN.Tween( letters[i].position )
-                    .to( { x: letters[i+1].position.x, y: letters[i+1].y, z: letters[i+1].z}, 3000 )
+                    .to( { x: letters[i+1].position.x, y: letters[i+1].y, z: letters[i+1].z}, 2000 )
                     .easing( TWEEN.Easing.Exponential.InOut )
                     .start();
         }
         new TWEEN.Tween( letters[letters.length-1].position )
                     .to( { x: letters[letters.length-1].position.x + letter_box_side_length + 10,
-                    y: letters[letters.length-1].y, z: letters[letters.length-1].z}, 3000 )
+                    y: letters[letters.length-1].y, z: letters[letters.length-1].z}, 2000 )
                     .easing( TWEEN.Easing.Exponential.InOut )
                     .start();
 
@@ -356,8 +366,9 @@ function move_tape(to_right)
 
 
     new TWEEN.Tween( this )
-    .to( {}, 5000 )
+    .to( {}, 2000 )
     .onUpdate( render )
+//    .onComplete(update_letter)
     .start();
 
 }
@@ -392,11 +403,21 @@ function next_machine_state()
     if(state_to_display == instructions.length)
     {
         var h1 = document.createElement('h1');
-        h1.textContent = "THE END";
+        h1.textContent = "Finished";
         document.body.appendChild(h1);
 
         var h3 = document.createElement('h3');
-        h3.textContent = "Final state: " + pretty_string(instructions[instructions.length - 1]);
+        var result = document.getElementById("last_value").textContent;
+
+        //depending on machine being decisive or not
+        if(result == 'None')
+        {
+            h3.textContent = "Final state: " + pretty_string(instructions[instructions.length - 1]);
+        }
+        else
+        {
+            h3.textContent = "Final state: " + result;
+        }
         document.body.appendChild(h3);
         return;
     }
@@ -438,27 +459,26 @@ function next_machine_state()
             move_tape(true);
         }
     }
+
+//    state_to_display += 1;
+}
+
+function in_delay()
+{
+//    next_machine_state();
+    TWEEN.update();
+//    update_letter();
+    update_visibility();
 }
 
 function animate() {
+//    if ( (Date.now() - lastTime) < interval) {
+//        return;
+//    }
+//    lastTime = Date.now();
     requestAnimationFrame( animate );
-    TWEEN.update();
-    update_visibility();
-
-    if(!not_initiated)
-    {
-        prepare_arrow();
-        if (enter_call%(2*interval) == 0)
-        {
-            next_machine_state();
-        }
-        else if (enter_call%interval == 0)
-        {
-            update_letter();
-        }
-        enter_call++;
-    }
-
+//    prepare_arrow();
+    in_delay();
     render();
 }
 

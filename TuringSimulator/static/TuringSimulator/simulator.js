@@ -143,9 +143,6 @@ function eventListeners()
         switch(event.code)
         {
             case "Space":
-                prepare_arrow();
-                next_machine_state();
-                update_letter();
                 break;
             case "Enter":
                 if(not_initiated)
@@ -153,9 +150,11 @@ function eventListeners()
                     init_letters();
                     start_moving = true;
                 }
-                prepare_arrow();
-                next_machine_state();
-                update_letter();
+                if(!not_initiated)
+                {
+                    prepare_arrow();
+                    setInterval(function(){go();}, 2000);
+                }
                 break;
             default:
                 break;
@@ -165,6 +164,20 @@ function eventListeners()
         camera.updateProjectMatrix;
 
     });
+}
+
+function go()
+{
+    if(enter_call%2 == 0)
+    {
+        next_machine_state();
+        enter_call++;
+    }
+    else
+    {
+        update_letter();
+        enter_call++;
+    }
 }
 
 function render()

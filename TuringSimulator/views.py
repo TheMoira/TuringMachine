@@ -15,10 +15,17 @@ from turing_utils.scripts.excel_utils import generate_xlsx_file, generate_instru
 
 s3 = boto3.resource('s3')
 
+
 # main page
 def index(request):
     # return HttpResponse("<h1>Turing Machine Simulator</h1>")
     return render(request, 'TuringSimulator/index.html')
+
+
+def machine_list(request):
+    machines = TuringMachineDB.objects.all()
+    context = { 'machines': machines, }
+    return render(request, 'TuringSimulator/machines.html', context)
 
 
 # about page
